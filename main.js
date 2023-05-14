@@ -25,13 +25,28 @@ class Game {
         const k = this.member.filter((e)=>e.role==="k").length;
         const w = this.member.filter((e)=>e.role==="w").length;
         if(w === 0){
-            this.output.innerHTML += `<h2>結果</h2><p>人狼は全滅した。${this.date}日で村人陣営の勝利！</p>`;
+            const resultHeading = document.createElement("h2");
+            resultHeading.textContent = "結果";
+            const villagerVictoryParagraph = document.createElement("p");
+            villagerVictoryParagraph.textContent = `人狼は全滅した。${this.date}日で村人陣営の勝利！`;
+            this.output.append(resultHeading, villagerVictoryParagraph);
         }else if(w >= v+k){
-            this.output.innerHTML += `<h2>結果</h2><p>村は人狼に支配された。${this.date}日で人狼陣営の勝利！</p>`;
+            const resultHeading = document.createElement("h2");
+            resultHeading.textContent = "結果";
+            const werewolfVictoryParagraph = document.createElement("p");
+            werewolfVictoryParagraph.textContent = `村は人狼に支配された。${this.date}日で人狼陣営の勝利！`;
+            this.output.append(resultHeading, werewolfVictoryParagraph);
         }
         if(w===0 || w>=v+k){
-            const s = this.result.map(e=>`<li>${e.name}: ${e.role} (${e.remark})</li>`).join("");
-            this.output.innerHTML += `<h3>正体</h3><ul>${s}</ul>`;
+            const shotaiHeading = document.createElement("h3");
+            shotaiHeading.textContent("正体");
+            const shotaiList = document.createElement("ul");
+            for(const e of this.result){
+                const shotaiListItem = document.createElement("li");
+                shotaiListItem.textContent = `${e.name}: ${e.role} (${e.remark})`;
+                shotaiList.append(shotaiListItem);
+            }
+            this.output.append(shotaiHeading, shotaiList);
             return true;
         }
         return false;
@@ -41,18 +56,24 @@ class Game {
         while(true){
             if(this.check()) break;
             console.log(`${this.date+1}日目 開始`);
-            this.output.innerHTML += `<h2>${this.date+1}日目 昼</h2>`;
+            const daytimeHeading = document.createElement("h2");
+            daytimeHeading.textContent = `${this.date+1}日目 昼`;
+            this.output.append(daytimeHeading)
             while(true){
-                this.output.innerHTML += "<h3>投票</h3>";
+                const voteHeading = document.createElement("h3");
+                voteHeading.textContent = "投票";
+                this.output.append(voteHeading);
                 let voteResult = new Array(this.member.length);
                 voteResult.fill(0);
-                let s = "";
+                const voteList = document.createElement("ul");
                 for(let i=0; i<this.member.length; i+=1){
                     const vote = Math.floor(Math.random()*this.member.length);
                     voteResult[vote] += 1;
-                    s += `<li>${this.member[i].name} =&gt; ${this.member[vote].name}</li>`;
+                    const voteListItem = document.createElement("li");
+                    voteListItem.textContent = `${this.member[i].name} => ${this.member[vote].name}`;
+                    voteList.appendChild(voteListItem);
                 }
-                this.output.innerHTML += `<ul>${s}</ul>`;
+                this.output.appendChild(voteList);
                 let flag = true;
                 let sac = 0;
                 let max = 0;
@@ -66,24 +87,34 @@ class Game {
                     }
                 }
                 if(flag){
-                    this.output.innerHTML += `<p>${this.member[sac].name}を処刑した。</p>`;
+                    const executionParagraph = document.createElement("p");
+                    executionParagraph.textContent = `${this.member[sac].name}を処刑した。`;
+                    this.output.appendChild(executionParagraph);
                     const no = this.result.findIndex(e=>e.name===this.member[sac].name);
                     this.result[no].remark = `${this.date+1}日目の昼に処刑された。`;
                     this.member = this.member.filter((_, i) => i!==sac);
                     break;
                 }else{
-                    this.output.innerHTML += "<p>意見が割れた。</p>";
+                    const ikenwareParagraph = document.createElement("p");
+                    ikenwareParagraph.textContent = "意見が割れた。";
+                    this.output.append(ikenwareParagraph);
                 }
             }
             if(this.check()) break;
-            this.output.innerHTML += `<h2>${this.date+1}日目 夜</h2>`;
+            const nightHeading = document.createElement("h2");
+            nightHeading.textContent = `${this.date+1}日目 夜`;
+            this.output.append(nightHeading);
             const wolfTarget = Math.floor(Math.random()*this.member.length);
             let knightTarget = -1;
             if(this.member.some(e=>e.role==="k")) knightTarget = Math.floor(Math.random()*this.member.length);
             if(wolfTarget === knightTarget){
-                this.output.innerHTML += "<p>何も起こらなかった。</p>";
+                const nanimookorazuParagraph = document.createElement("p");
+                nanimookorazuParagraph.textContent = "何も起こらなかった。";
+                this.output.append(nanimookorazuParagraph);
             }else{
-                this.output.innerHTML += `<p>${this.member[wolfTarget].name}が食われた。</p>`;
+                const killedParagraph = document.createElement("p");
+                killedParagraph.textContent = `${this.member[wolfTarget].name}が食われた。`;
+                this.output.append(killedParagraph);
                 const no = this.result.findIndex(e=>e.name===this.member[wolfTarget].name);
                 this.result[no].remark = `${this.date+1}日目の夜に食われた。`;
                 this.member = this.member.filter((_, i) => i!==wolfTarget);
