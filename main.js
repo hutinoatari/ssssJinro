@@ -39,7 +39,7 @@ class Game {
         }
         if(w===0 || w>=v+k){
             const shotaiHeading = document.createElement("h3");
-            shotaiHeading.textContent("正体");
+            shotaiHeading.textContent = "正体";
             const shotaiList = document.createElement("ul");
             for(const e of this.result){
                 const shotaiListItem = document.createElement("li");
